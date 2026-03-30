@@ -1,0 +1,14 @@
+# Sensitive configuration
+config.json
+
+# Cache directory
+.interactive-slides-cache/
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store

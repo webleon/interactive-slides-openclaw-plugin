@@ -1,0 +1,46 @@
+{
+  "name": "@webleon/interactive-slides-openclaw-plugin",
+  "version": "1.0.0",
+  "description": "Bridge to Interactive Slides skill for OpenClaw - create beautiful, animated web presentations",
+  "type": "module",
+  "main": "index.ts",
+  "bin": {
+    "interactive-slides-install": "./install.js"
+  },
+  "scripts": {
+    "install": "node install.js",
+    "postinstall": "echo 'Interactive Slides OpenClaw Plugin installed! Run: openclaw gateway restart'"
+  },
+  "keywords": [
+    "openclaw",
+    "interactive-slides",
+    "presentations",
+    "slides",
+    "powerpoint",
+    "agent",
+    "productivity"
+  ],
+  "author": "WebLeOn",
+  "license": "MIT",
+  "openclaw": {
+    "extensions": ["./index.ts"],
+    "setupEntry": "./install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sylvial928/interactive-slides.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "index.ts",
+    "openclaw.plugin.json",
+    "package.json",
+    "README.md",
+    "install.js"
+  ],
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.0"
+  }
+}

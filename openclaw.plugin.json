@@ -1,0 +1,52 @@
+{
+  "id": "interactive-slides-openclaw-plugin",
+  "name": "Interactive Slides OpenClaw Plugin",
+  "description": "Bridge to Interactive Slides skill for OpenClaw. Create beautiful, animated web presentations with brand kit support and PPTX export.",
+  "version": "1.0.0",
+  "kind": "extension",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "description": "Enable the plugin",
+        "default": true
+      },
+      "skillsRepo": {
+        "type": "string",
+        "description": "GitHub repository URL for Interactive Slides skill",
+        "default": "https://github.com/sylvial928/interactive-slides.git"
+      },
+      "autoDetectPresentations": {
+        "type": "boolean",
+        "description": "Auto-detect presentation-related tasks and load the skill",
+        "default": true
+      },
+      "autoUpdate": {
+        "type": "boolean",
+        "description": "Auto-update skill on gateway startup",
+        "default": false
+      }
+    }
+  },
+  "uiHints": {
+    "enabled": {
+      "label": "Enabled",
+      "description": "Enable Interactive Slides OpenClaw Plugin"
+    },
+    "skillsRepo": {
+      "label": "Skills Repository",
+      "placeholder": "https://github.com/sylvial928/interactive-slides.git",
+      "description": "GitHub repository containing Interactive Slides skill"
+    },
+    "autoDetectPresentations": {
+      "label": "Auto-detect Presentation Tasks",
+      "description": "Automatically load skill for presentation-related tasks"
+    },
+    "autoUpdate": {
+      "label": "Auto-update Skill",
+      "description": "Automatically update skill from GitHub on startup"
+    }
+  }
+}
