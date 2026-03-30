@@ -58,6 +58,7 @@ interface LoadSkillsResult {
 // ============================================================================
 
 const DEFAULT_SKILLS_REPO = "https://github.com/sylvial928/interactive-slides.git";
+const SKILLS_SUBDIR = "skills";
 const CACHE_DIR_NAME = ".interactive-slides-cache";
 const PLUGIN_NAME = "Interactive Slides OpenClaw Plugin";
 
@@ -218,8 +219,10 @@ function loadSkills(skillsDir: string, logger: any): LoadSkillsResult {
 
   const startTime = Date.now();
   
-  // Look for SKILL.md files
+  // Look for SKILL.md files in skills subdirectory
+  const skillsSubdir = path.join(skillsDir, SKILLS_SUBDIR);
   const skillFiles = [
+    path.join(skillsSubdir, "interactive-slides", "SKILL.md"),
     path.join(skillsDir, "SKILL.md"),
     path.join(skillsDir, "interactive-slides", "SKILL.md")
   ];
