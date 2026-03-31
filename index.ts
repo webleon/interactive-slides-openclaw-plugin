@@ -115,11 +115,19 @@ function getSkillsDir(cacheDir: string): string {
 
 function ensureSkills(repoUrl: string, pluginDir: string, logger: any): { success: boolean; skillsDir: string; message: string } {
   const cacheDir = getCacheDir(pluginDir);
-  const skillsDir = getSkillsDir(cacheDir);
+  const cacheSkillsDir = getSkillsDir(cacheDir);
+  
+  // First, check if local skills/ directory exists in plugin folder
+  const localSkillsDir = path.join(pluginDir, SKILLS_SUBDIR);
+  if (fs.existsSync(path.join(localSkillsDir, "interactive-slides", "SKILL.md"))) {
+    logger.info(`[${PLUGIN_NAME}] Using local skills from ${localSkillsDir}`);
+    return { success: true, skillsDir: localSkillsDir, message: "Using local skills" };
+  }
 
-  // Check if already cloned
+  // Check if already cloned in cache
   if (fs.existsSync(path.join(cacheDir, ".git"))) {
-    return { success: true, skillsDir, message: "Skills already cached" };
+    logger.info(`[${PLUGIN_NAME}] Using cached skills from ${cacheSkillsDir}`);
+    return { success: true, skillsDir: cacheSkillsDir, message: "Skills already cached" };
   }
 
   // Need to clone
@@ -139,11 +147,11 @@ function ensureSkills(repoUrl: string, pluginDir: string, logger: any): { succes
     });
 
     logger.info(`[${PLUGIN_NAME}] Successfully cloned skills to ${cacheDir}`);
-    return { success: true, skillsDir, message: "Skills cloned successfully" };
+    return { success: true, skillsDir: cacheSkillsDir, message: "Skills cloned successfully" };
   } catch (err: any) {
     const message = err.message || String(err);
     logger.error(`[${PLUGIN_NAME}] Failed to clone skills: ${message}`);
-    return { success: false, skillsDir, message: `Clone failed: ${message}` };
+    return { success: false, skillsDir: cacheSkillsDir, message: `Clone failed: ${message}` };
   }
 }
 
