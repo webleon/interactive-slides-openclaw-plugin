@@ -358,6 +358,14 @@ function buildSkillsContext(skills: Map<string, Skill>, skillNames: string[]): s
   sections.push(``);
   sections.push(`You have access to the Interactive Slides skill for creating beautiful, animated web presentations.`);
   sections.push(``);
+  sections.push(`## Available Tools`);
+  sections.push(``);
+  sections.push(`| Tool | Description | When to Use |`);
+  sections.push(`|------|-------------|-------------|`);
+  sections.push(`| \`skill(name)\` | Load this skill manually | When auto-detection fails to trigger |`);
+  sections.push(`| \`update_interactive_slides()\` | Update skill to latest version | When you need new features or bug fixes |`);
+  sections.push(`| \`interactive_slides_version()\` | Check current skill version | When debugging or verifying installation |`);
+  sections.push(``);
 
   for (const name of skillNames) {
     const skill = skills.get(name);
