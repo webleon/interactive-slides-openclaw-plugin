@@ -1,14 +1,17 @@
-# Sensitive configuration
-config.json
-
-# Cache directory
+# Runtime cache
 .interactive-slides-cache/
 
-# Node modules
+# Dependencies
 node_modules/
 
-# Logs
-*.log
+# Build output
+dist/
+*.js.map
 
 # OS files
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

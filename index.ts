@@ -9,7 +9,6 @@
  * - Smart detection of presentation-related tasks
  * - Manual skill loading via tool
  * - Version management and updates
- * - Configurable auto-update
  */
 
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -27,7 +26,6 @@ interface PluginConfig {
   enabled?: boolean;
   skillsRepo?: string;
   autoDetectPresentations?: boolean;
-  autoUpdate?: boolean;
 }
 
 interface Skill {
@@ -82,6 +80,27 @@ const ENGLISH_KEYWORDS: Record<string, string[]> = {
   ]
 };
 
+function detectRelevantSkills(prompt: string, skills: Map<string, Skill>): string[] {
+  const relevant = new Set<string>();
+
+  // Detect by Chinese keywords (no case conversion)
+  for (const [skillName, keywords] of Object.entries(CHINESE_KEYWORDS)) {
+    if (skills.has(skillName) && keywords.some(kw => prompt.includes(kw))) {
+      relevant.add(skillName);
+    }
+  }
+
+  // Detect by English keywords (lowercase comparison)
+  const promptLower = prompt.toLowerCase();
+  for (const [skillName, keywords] of Object.entries(ENGLISH_KEYWORDS)) {
+    if (skills.has(skillName) && keywords.some(kw => promptLower.includes(kw.toLowerCase()))) {
+      relevant.add(skillName);
+    }
+  }
+
+  return Array.from(relevant);
+}
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -91,7 +110,7 @@ function getCacheDir(pluginDir: string): string {
 }
 
 function getSkillsDir(cacheDir: string): string {
-  return path.join(cacheDir, "skills");
+  return path.join(cacheDir, SKILLS_SUBDIR);
 }
 
 function ensureSkills(repoUrl: string, pluginDir: string, logger: any): { success: boolean; skillsDir: string; message: string } {
@@ -250,27 +269,6 @@ function loadSkills(skillsDir: string, logger: any): LoadSkillsResult {
   return { skills, count: skills.size, errors };
 }
 
-function detectRelevantSkills(prompt: string, skills: Map<string, Skill>): string[] {
-  const relevant = new Set<string>();
-
-  // Detect by Chinese keywords (no case conversion)
-  for (const [skillName, keywords] of Object.entries(CHINESE_KEYWORDS)) {
-    if (skills.has(skillName) && keywords.some(kw => prompt.includes(kw))) {
-      relevant.add(skillName);
-    }
-  }
-
-  // Detect by English keywords (lowercase comparison)
-  const promptLower = prompt.toLowerCase();
-  for (const [skillName, keywords] of Object.entries(ENGLISH_KEYWORDS)) {
-    if (skills.has(skillName) && keywords.some(kw => promptLower.includes(kw.toLowerCase()))) {
-      relevant.add(skillName);
-    }
-  }
-
-  return Array.from(relevant);
-}
-
 function buildSkillsContext(skills: Map<string, Skill>, skillNames: string[]): string {
   const sections: string[] = [];
 
@@ -363,6 +361,8 @@ export default definePluginEntry({
         appendSystemContext: guidance,
       };
     });
+
+    api.logger.info(`[${PLUGIN_NAME}] Plugin registered`);
 
     // ========================================================================
     // Tool: skill(name)

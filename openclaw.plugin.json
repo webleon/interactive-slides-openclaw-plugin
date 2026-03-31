@@ -22,11 +22,6 @@
         "type": "boolean",
         "description": "Auto-detect presentation-related tasks and load the skill",
         "default": true
-      },
-      "autoUpdate": {
-        "type": "boolean",
-        "description": "Auto-update skill on gateway startup",
-        "default": false
       }
     }
   },
@@ -43,10 +38,6 @@
     "autoDetectPresentations": {
       "label": "Auto-detect Presentation Tasks",
       "description": "Automatically load skill for presentation-related tasks"
-    },
-    "autoUpdate": {
-      "label": "Auto-update Skill",
-      "description": "Automatically update skill from GitHub on startup"
     }
   }
 }
