@@ -116,18 +116,11 @@ function getSkillsDir(cacheDir: string): string {
 function ensureSkills(repoUrl: string, pluginDir: string, logger: any): { success: boolean; skillsDir: string; message: string } {
   const cacheDir = getCacheDir(pluginDir);
   const cacheSkillsDir = getSkillsDir(cacheDir);
-  
-  // First, check if local skills/ directory exists in plugin folder
-  const localSkillsDir = path.join(pluginDir, SKILLS_SUBDIR);
-  if (fs.existsSync(path.join(localSkillsDir, "interactive-slides", "SKILL.md"))) {
-    logger.info(`[${PLUGIN_NAME}] Using local skills from ${localSkillsDir}`);
-    return { success: true, skillsDir: localSkillsDir, message: "Using local skills" };
-  }
 
   // Check if already cloned in cache
   if (fs.existsSync(path.join(cacheDir, ".git"))) {
-    logger.info(`[${PLUGIN_NAME}] Using cached skills from ${cacheSkillsDir}`);
-    return { success: true, skillsDir: cacheSkillsDir, message: "Skills already cached" };
+    logger.info(`[${PLUGIN_NAME}] Using cached skills from ${cacheDir}`);
+    return { success: true, skillsDir: cacheDir, message: "Skills already cached" };
   }
 
   // Need to clone
@@ -147,11 +140,11 @@ function ensureSkills(repoUrl: string, pluginDir: string, logger: any): { succes
     });
 
     logger.info(`[${PLUGIN_NAME}] Successfully cloned skills to ${cacheDir}`);
-    return { success: true, skillsDir: cacheSkillsDir, message: "Skills cloned successfully" };
+    return { success: true, skillsDir: cacheDir, message: "Skills cloned successfully" };
   } catch (err: any) {
     const message = err.message || String(err);
     logger.error(`[${PLUGIN_NAME}] Failed to clone skills: ${message}`);
-    return { success: false, skillsDir: cacheSkillsDir, message: `Clone failed: ${message}` };
+    return { success: false, skillsDir: cacheDir, message: `Clone failed: ${message}` };
   }
 }
 
@@ -246,17 +239,10 @@ function loadSkills(skillsDir: string, logger: any): LoadSkillsResult {
 
   const startTime = Date.now();
   
-  // Look for SKILL.md files in skills subdirectory
-  const skillsSubdir = path.join(skillsDir, SKILLS_SUBDIR);
-  const skillFiles = [
-    path.join(skillsSubdir, "interactive-slides", "SKILL.md"),
-    path.join(skillsDir, "SKILL.md"),
-    path.join(skillsDir, "interactive-slides", "SKILL.md")
-  ];
+  // Look for SKILL.md in the root of the cloned repo
+  const skillPath = path.join(skillsDir, "SKILL.md");
 
-  for (const skillPath of skillFiles) {
-    if (!fs.existsSync(skillPath)) continue;
-
+  if (fs.existsSync(skillPath)) {
     try {
       const content = fs.readFileSync(skillPath, "utf-8");
       const skill = parseSkill(content, skillPath, logger);
