@@ -62,7 +62,9 @@ if (!config.plugins.allow.includes(PLUGIN_ID)) {
 // Configure plugin entry
 config.plugins.entries[PLUGIN_ID] = {
   enabled: true,
-  autoDetectPresentations: true
+  config: {
+    autoDetectPresentations: true
+  }
 };
 console.log(`✅ Added to plugins.entries`);
 
