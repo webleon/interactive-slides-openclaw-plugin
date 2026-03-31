@@ -9,6 +9,8 @@
  * - Smart detection of presentation-related tasks
  * - Manual skill loading via tool
  * - Version management and updates
+ * 
+ * @packageDocumentation
  */
 
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -22,32 +24,61 @@ import { execSync } from "node:child_process";
 // Types
 // ============================================================================
 
+/**
+ * Plugin configuration options
+ */
 interface PluginConfig {
+  /** Enable or disable the plugin */
   enabled?: boolean;
+  /** GitHub repository URL for the skills */
   skillsRepo?: string;
+  /** Auto-detect presentation-related tasks and load the skill */
   autoDetectPresentations?: boolean;
 }
 
+/**
+ * Parsed skill data structure
+ */
 interface Skill {
+  /** Skill name from frontmatter */
   name: string;
+  /** Skill description from frontmatter */
   description: string;
+  /** Full skill content (body) */
   content: string;
 }
 
+/**
+ * Result of version check operation
+ */
 interface VersionResult {
+  /** Whether the operation succeeded */
   success: boolean;
+  /** Git commit hash (if successful) */
   version?: string;
+  /** Human-readable message */
   message: string;
 }
 
+/**
+ * Result of update operation
+ */
 interface UpdateResult {
+  /** Whether the operation succeeded */
   success: boolean;
+  /** Human-readable message */
   message: string;
 }
 
+/**
+ * Result of skill loading operation
+ */
 interface LoadSkillsResult {
+  /** Map of loaded skills by name */
   skills: Map<string, Skill>;
+  /** Number of skills loaded */
   count: number;
+  /** List of error messages */
   errors: string[];
 }
 
@@ -55,16 +86,20 @@ interface LoadSkillsResult {
 // Constants
 // ============================================================================
 
+/** Default GitHub repository for Interactive Slides skills */
 const DEFAULT_SKILLS_REPO = "https://github.com/sylvial928/interactive-slides.git";
+/** Subdirectory name for skills (if using multi-skill structure) */
 const SKILLS_SUBDIR = "skills";
+/** Cache directory name for cloned skills */
 const CACHE_DIR_NAME = ".interactive-slides-cache";
+/** Plugin display name for logging */
 const PLUGIN_NAME = "Interactive Slides OpenClaw Plugin";
 
 // ============================================================================
 // Keyword Detection
 // ============================================================================
 
-// Chinese keywords for presentation-related tasks
+/** Chinese keywords for presentation-related tasks */
 const CHINESE_KEYWORDS: Record<string, string[]> = {
   "interactive-slides": [
     "演示文稿", "演示", "幻灯片", "PPT", "演讲", "展示", "汇报",
@@ -72,7 +107,7 @@ const CHINESE_KEYWORDS: Record<string, string[]> = {
   ]
 };
 
-// English keywords (lowercase comparison)
+/** English keywords for presentation-related tasks (lowercase comparison) */
 const ENGLISH_KEYWORDS: Record<string, string[]> = {
   "interactive-slides": [
     "presentation", "slides", "powerpoint", "deck", "pitch",
@@ -80,6 +115,12 @@ const ENGLISH_KEYWORDS: Record<string, string[]> = {
   ]
 };
 
+/**
+ * Detect relevant skills based on user prompt keywords
+ * @param prompt - User's input prompt
+ * @param skills - Map of available skills
+ * @returns Array of relevant skill names
+ */
 function detectRelevantSkills(prompt: string, skills: Map<string, Skill>): string[] {
   const relevant = new Set<string>();
 
@@ -105,17 +146,33 @@ function detectRelevantSkills(prompt: string, skills: Map<string, Skill>): strin
 // Helper Functions
 // ============================================================================
 
+/**
+ * Get the cache directory path (inside plugin directory)
+ * @param pluginDir - Plugin installation directory
+ * @returns Full path to cache directory
+ */
 function getCacheDir(pluginDir: string): string {
   return path.join(pluginDir, CACHE_DIR_NAME);
 }
 
+/**
+ * Get the skills directory path inside cache
+ * @param cacheDir - Cache directory path
+ * @returns Full path to skills subdirectory
+ */
 function getSkillsDir(cacheDir: string): string {
   return path.join(cacheDir, SKILLS_SUBDIR);
 }
 
+/**
+ * Ensure skills are available (clone from GitHub if needed)
+ * @param repoUrl - GitHub repository URL to clone from
+ * @param pluginDir - Plugin installation directory
+ * @param logger - Logger instance
+ * @returns Result object with success status and skills directory path
+ */
 function ensureSkills(repoUrl: string, pluginDir: string, logger: any): { success: boolean; skillsDir: string; message: string } {
   const cacheDir = getCacheDir(pluginDir);
-  const cacheSkillsDir = getSkillsDir(cacheDir);
 
   // Check if already cloned in cache
   if (fs.existsSync(path.join(cacheDir, ".git"))) {
@@ -148,6 +205,12 @@ function ensureSkills(repoUrl: string, pluginDir: string, logger: any): { succes
   }
 }
 
+/**
+ * Update skills from GitHub (git pull)
+ * @param pluginDir - Plugin installation directory
+ * @param logger - Logger instance
+ * @returns Result object with success status and message
+ */
 function updateSkills(pluginDir: string, logger: any): UpdateResult {
   const cacheDir = getCacheDir(pluginDir);
 
@@ -173,6 +236,12 @@ function updateSkills(pluginDir: string, logger: any): UpdateResult {
   }
 }
 
+/**
+ * Get current skills version info (git commit hash and date)
+ * @param pluginDir - Plugin installation directory
+ * @param logger - Logger instance
+ * @returns Result object with version info or error message
+ */
 function getSkillsVersion(pluginDir: string, logger: any): VersionResult {
   const cacheDir = getCacheDir(pluginDir);
 
@@ -203,6 +272,13 @@ function getSkillsVersion(pluginDir: string, logger: any): VersionResult {
   }
 }
 
+/**
+ * Parse frontmatter from skill markdown content
+ * @param content - Raw markdown content with YAML frontmatter
+ * @param filename - Source filename for logging
+ * @param logger - Logger instance
+ * @returns Parsed skill object or null if parsing failed
+ */
 function parseSkill(content: string, filename: string, logger: any): Skill | null {
   const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!match) {
@@ -228,6 +304,12 @@ function parseSkill(content: string, filename: string, logger: any): Skill | nul
   };
 }
 
+/**
+ * Load all skills from the skills directory
+ * @param skillsDir - Directory containing skill files
+ * @param logger - Logger instance
+ * @returns Result object with loaded skills and any errors
+ */
 function loadSkills(skillsDir: string, logger: any): LoadSkillsResult {
   const skills = new Map<string, Skill>();
   const errors: string[] = [];
@@ -263,6 +345,12 @@ function loadSkills(skillsDir: string, logger: any): LoadSkillsResult {
   return { skills, count: skills.size, errors };
 }
 
+/**
+ * Build system context string from selected skills for prompt injection
+ * @param skills - Map of all available skills
+ * @param skillNames - Names of skills to include
+ * @returns Formatted markdown context string
+ */
 function buildSkillsContext(skills: Map<string, Skill>, skillNames: string[]): string {
   const sections: string[] = [];
 
@@ -402,15 +490,25 @@ export default definePluginEntry({
         const result = updateSkills(pluginDir, api.logger);
         
         if (result.success) {
-          // Reload skills after update
+          // Reload skills after update with validation
           const { skills: newSkills, count: newCount } = loadSkills(skillsDir, api.logger);
           
           if (newCount > 0) {
+            // Clear and reload only if new skills loaded successfully
             skills.clear();
             for (const [name, skill] of newSkills) {
               skills.set(name, skill);
             }
             api.logger.info(`[${PLUGIN_NAME}] Reloaded ${newCount} skills after update in ${Date.now() - updateStart}ms`);
+          } else {
+            // Handle case where update succeeded but no skills loaded
+            api.logger.warn(`[${PLUGIN_NAME}] Update succeeded but no skills loaded. Keeping previous skills.`);
+            return {
+              content: [{ 
+                type: "text", 
+                text: `⚠️ ${result.message}\n\n**Warning:** No skills loaded after update. Previous skills retained.` 
+              }],
+            };
           }
         }
         
