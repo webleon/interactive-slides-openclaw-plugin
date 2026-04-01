@@ -458,7 +458,7 @@ export default definePluginEntry({
     // Tool: skill(name)
     // ========================================================================
     api.registerTool({
-      name: "skill",
+      name: "interactive_slides",
       description: "Load and apply the Interactive Slides skill by name.",
       parameters: Type.Object({
         name: Type.String({ 
