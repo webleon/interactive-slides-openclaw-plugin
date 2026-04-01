@@ -390,7 +390,7 @@ function buildSkillsContext(skills: Map<string, Skill>, skillNames: string[]): s
 // ============================================================================
 
 export default definePluginEntry({
-  id: "interactive-slides-openclaw-plugin",
+  id: "interactive-slides-v2",
   name: "Interactive Slides OpenClaw Plugin",
   description: "Bridge to Interactive Slides skill for OpenClaw - create beautiful presentations",
   kind: "extension",
@@ -541,6 +541,6 @@ export default definePluginEntry({
       },
     });
 
-    api.logger.info(`[${PLUGIN_NAME}] Plugin registered with tools: skill, update_interactive_slides, interactive_slides_version`);
+    api.logger.info(`[${PLUGIN_NAME}] Plugin registered with tools: interactive_slides, update_interactive_slides, interactive_slides_version`);
   },
 });
