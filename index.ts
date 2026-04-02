@@ -20,6 +20,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { fileURLToPath } from "node:url";
 
 // ============================================================================
 // Types
@@ -97,6 +98,37 @@ const CACHE_DIR_NAME = ".interactive-slides-cache";
 const PLUGIN_NAME = "Interactive Slides OpenClaw Plugin";
 
 // ============================================================================
+// Port Detection
+// ============================================================================
+
+/**
+ * Check if a port is available
+ * @param port - Port number to check
+ * @returns true if port is available, false if in use
+ */
+function isPortAvailable(port: number): boolean {
+  try {
+    execSync(`lsof -i :${port}`, { stdio: 'ignore' });
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * Find an available port starting from startPort
+ * @param startPort - Starting port number
+ * @returns Available port number
+ */
+function findAvailablePort(startPort: number): number {
+  let port = startPort;
+  while (!isPortAvailable(port) && port < startPort + 100) {
+    port++;
+  }
+  return port;
+}
+
+// ============================================================================
 // Keyword Detection
 // ============================================================================
 
@@ -104,6 +136,7 @@ const PLUGIN_NAME = "Interactive Slides OpenClaw Plugin";
 const CHINESE_KEYWORDS: Record<string, string[]> = {
   "interactive-slides": [
     "演示文稿", "演示", "幻灯片", "PPT", "演讲", "展示", "汇报",
+    "用 interactive-slides", "用 interactive_slides",
     "presentation", "slides", "powerpoint", "deck", "pitch"
   ]
 };
