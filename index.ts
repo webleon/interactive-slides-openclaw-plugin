@@ -19,6 +19,7 @@ import type { OpenClawPluginApi } from "openclaw/plugin-sdk/plugin-entry";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { execSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 // ============================================================================
 // Types
@@ -398,7 +399,8 @@ export default definePluginEntry({
   register(api: OpenClawPluginApi) {
     const startTime = Date.now();
     const config = (api.pluginConfig || {}) as PluginConfig;
-    const pluginDir = path.dirname(new URL(import.meta.url).pathname);
+    const __filename = fileURLToPath(import.meta.url);
+    const pluginDir = path.dirname(__filename);
 
     // Check if plugin is enabled
     if (config.enabled === false) {
