@@ -8,7 +8,7 @@
     "interactive-slides-install": "./install.js"
   },
   "scripts": {
-    "install": "node install.js",
+    "setup": "node install.js",
     "postinstall": "echo 'Interactive Slides OpenClaw Plugin installed! Run: openclaw gateway restart'"
   },
   "keywords": [
