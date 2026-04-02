@@ -136,7 +136,7 @@ function findAvailablePort(startPort: number): number {
 const CHINESE_KEYWORDS: Record<string, string[]> = {
   "interactive-slides": [
     "演示文稿", "演示", "幻灯片", "PPT", "演讲", "展示", "汇报",
-    "用 interactive-slides", "用 interactive_slides",
+    "用 interactive-slides", "用 interactive-slides",
     "presentation", "slides", "powerpoint", "deck", "pitch"
   ]
 };
